@@ -20,12 +20,12 @@ public class OperationsOnFund implements Iterable<FundOperation> {
      */
     private Money totalDeposit;
     private Money lastRegistryAmount;
-    private Money income;
+    private Money balance;
 
     public OperationsOnFund() {
         this.operations = new ArrayList<FundOperation>();
         this.closed = false;
-        this.income = Money.ZERO;
+        this.balance = Money.ZERO;
         this.lastRegistryAmount = Money.ZERO;
         this.totalDeposit = Money.ZERO;
         this.deposit = Money.ZERO;
@@ -34,25 +34,25 @@ public class OperationsOnFund implements Iterable<FundOperation> {
     public FundOperationResult add(FundOperation operation) {
         this.operations.add(operation);
         switch (operation.getTransactionType()) {
-            case NABYCIE:
-            case NABYCIE_OTWIERAJACE:
+            case PURCHASE:
+            case OPENING_PURCHASE:
                 this.totalDeposit = this.totalDeposit.add(operation.getAmount());
                 this.deposit = this.deposit.add(operation.getAmount());
                 this.lastRegistryAmount = operation.getRegistryAmount();
-                this.income = operation.getRegistryAmount().minus(this.deposit);
+                this.balance = operation.getRegistryAmount().minus(this.deposit);
                 break;
-            case KONWERSJA:
+            case SWITCH:
                 this.lastRegistryAmount = operation.getRegistryAmount();
                 if (operation.getRegistryAmount().isZero()) {
-                    this.income = operation.getAmount().minus(this.deposit);
+                    this.balance = operation.getAmount().minus(this.deposit);
                     close();
                     break;
                 }
                 this.deposit = this.deposit.add(operation.getAmount());
-                this.income = operation.getRegistryAmount().minus(this.deposit);
+                this.balance = operation.getRegistryAmount().minus(this.deposit);
                 break;
-            case ODKUPIENIE:
-                this.income = operation.getAmount().minus(this.deposit);
+            case REDEMPTION:
+                this.balance = operation.getAmount().minus(this.deposit);
                 this.lastRegistryAmount = operation.getRegistryAmount();
                 close();
                 break;
@@ -79,8 +79,8 @@ public class OperationsOnFund implements Iterable<FundOperation> {
         return closed;
     }
 
-    public Money getIncome() {
-        return income;
+    public Money getBalance() {
+        return balance;
     }
 
     public int count() {

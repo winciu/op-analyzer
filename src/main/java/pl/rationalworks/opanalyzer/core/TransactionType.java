@@ -4,7 +4,7 @@ package pl.rationalworks.opanalyzer.core;
  * @author Adam Winciorek
  */
 public enum TransactionType {
-    NABYCIE, NABYCIE_OTWIERAJACE("NABYCIE OTWIERAJĄCE"), KONWERSJA, ODKUPIENIE;
+    PURCHASE("NABYCIE"), OPENING_PURCHASE("NABYCIE OTWIERAJĄCE"), SWITCH("KONWERSJA"), REDEMPTION("ODKUPIENIE");
 
     private String originalName;
 

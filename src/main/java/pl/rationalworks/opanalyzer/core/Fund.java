@@ -41,6 +41,7 @@ public class Fund {
 
     /**
      * How much money we put in this fund form the beginning.
+     *
      * @return
      */
     public Money totalDeposit() {
@@ -52,27 +53,29 @@ public class Fund {
     }
 
     /**
-     * Calculate income. This is the current income from this found which is currently in my wallet.
+     * Calculate balance. This is the current balance from this found which is currently in my wallet.
+     *
      * @return
      */
-    public Money income() {
+    public Money balance() {
         OperationsOnFund operationsOnFund = this.operationSeries.getCurrentOperationsOnFund();
         if (operationsOnFund.areClosed()) {
             return Money.ZERO;
         }
-        return operationsOnFund.getIncome();
+        return operationsOnFund.getBalance();
     }
 
     /**
-     * Calculate income. This is the total income from the very first transaction on this fund.
+     * Calculate balance. This is the total balance from the very first transaction on this fund.
+     *
      * @return
      */
-    public Money totalIncome() {
-        Money totalIncome = Money.ZERO;
+    public Money totalBalance() {
+        Money totalBalance = Money.ZERO;
         for (OperationsOnFund operationsOnFund : this.operationSeries) {
-            totalIncome = totalIncome.add(operationsOnFund.getIncome());
+            totalBalance = totalBalance.add(operationsOnFund.getBalance());
         }
-        return totalIncome;
+        return totalBalance;
     }
 
     public OperationsOnFund currentOperations() {
@@ -85,5 +88,27 @@ public class Fund {
 
     public int operationSeriesCount() {
         return this.operationSeries.count();
+    }
+
+    public Money totalIncome() {
+        Money income = Money.ZERO;
+        for (OperationsOnFund operationsOnFund : this.operationSeries) {
+            final Money balance = operationsOnFund.getBalance();
+            if (balance.isPositive()) {
+                income = income.add(balance);
+            }
+        }
+        return income;
+    }
+
+    public Money totalLoss() {
+        Money loss = Money.ZERO;
+        for (OperationsOnFund operationsOnFund : this.operationSeries) {
+            final Money balance = operationsOnFund.getBalance();
+            if (balance.isNegative()) {
+                loss = loss.add(balance);
+            }
+        }
+        return loss;
     }
 }

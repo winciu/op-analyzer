@@ -2,10 +2,12 @@ package pl.rationalworks.opanalyzer.cli;
 
 import asg.cliche.Command;
 import asg.cliche.Param;
+import jlibs.core.lang.Ansi;
 import pl.rationalworks.opanalyzer.InputFileParser;
 import pl.rationalworks.opanalyzer.core.Fund;
 import pl.rationalworks.opanalyzer.core.FundOperation;
 import pl.rationalworks.opanalyzer.core.Funds;
+import pl.rationalworks.opanalyzer.core.Money;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,6 +20,7 @@ import java.util.List;
 public class RootShell {
 
     private final Funds funds;
+    private static final Ansi negativeFormatter = new Ansi(Ansi.Attribute.BRIGHT, Ansi.Color.RED, null);
 
     public RootShell() {
         this.funds = new Funds();
@@ -52,11 +55,17 @@ public class RootShell {
 
     @Command(abbrev = "st", description = "Shows overall status (summary)")
     public void showOverallStatus() {
-        showKeyValuePair("Total income", funds.totalIncome().value());
-        showKeyValuePair("Total deposit", funds.totalDeposit().value());
+        showMoneyFieldValue("Total balance", funds.totalBalance());
+        showMoneyFieldValue("Total deposit", funds.totalDeposit());
+        showMoneyFieldValue("Total income", funds.totalIncome());
+        showMoneyFieldValue("Total loss", funds.totalLoss());
     }
 
-    private static void showKeyValuePair(String header, double value) {
-        Logger.format("%-15s: %.2f\n", header, value);
+    private static void showMoneyFieldValue(String header, Money money) {
+        String formattedValue = money.asText();
+        if (money.isNegative()) {
+            formattedValue = negativeFormatter.colorize(formattedValue);
+        }
+        Logger.format("%-15s: %s\n", header, formattedValue);
     }
 }

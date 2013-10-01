@@ -72,29 +72,29 @@ public class Funds {
     }
 
     /**
-     * Calculates income. This is the income from funds I currently have.
+     * Calculates balance. This is the balance from funds I currently have.
      *
      * @return
      */
-    public Money income() {
-        Money income = Money.ZERO;
+    public Money balance() {
+        Money balance = Money.ZERO;
         for (Fund fund : currentFunds()) {
-            income = income.add(fund.income());
+            balance = balance.add(fund.balance());
         }
-        return income;
+        return balance;
     }
 
     /**
-     * Calculates income. This is the total income I have from the beginning.
+     * Calculates balance. This is the total balance I have from the beginning.
      *
      * @return
      */
-    public Money totalIncome() {
-        Money totalIncome = Money.ZERO;
+    public Money totalBalance() {
+        Money totalBalance = Money.ZERO;
         for (Fund fund : funds.values()) {
-            totalIncome = totalIncome.add(fund.totalIncome());
+            totalBalance = totalBalance.add(fund.totalBalance());
         }
-        return totalIncome;
+        return totalBalance;
     }
 
     public Money totalDeposit() {
@@ -103,5 +103,21 @@ public class Funds {
             totalDeposit = totalDeposit.add(fund.totalDeposit());
         }
         return totalDeposit;
+    }
+
+    public Money totalIncome() {
+        Money totalIncome = Money.ZERO;
+        for (Fund fund : funds.values()) {
+            totalIncome = totalIncome.add(fund.totalIncome());
+        }
+        return totalIncome;
+    }
+
+    public Money totalLoss() {
+        Money totalLoss = Money.ZERO;
+        for (Fund fund : funds.values()) {
+            totalLoss = totalLoss.add(fund.totalLoss());
+        }
+        return totalLoss;
     }
 }

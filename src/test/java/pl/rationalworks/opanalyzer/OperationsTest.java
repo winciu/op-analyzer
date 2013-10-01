@@ -35,23 +35,23 @@ public class OperationsTest {
 
     @Test
     public void incomeShouldBeCorrect() {
-        assertThat(funds.totalIncome()).isEqualTo(new Money(170.97));
-        assertThat(funds.income()).isEqualTo(Money.ZERO);
+        assertThat(funds.totalBalance()).isEqualTo(new Money(170.97));
+        assertThat(funds.balance()).isEqualTo(Money.ZERO);
     }
 
     @Test
     public void resultsForPANEFundShouldBeCorrect() {
         Fund paneFund = funds.findFundByName("PANE");
         assertThat(paneFund.totalDeposit()).isEqualTo(new Money(1000));
-        assertThat(paneFund.totalIncome()).isEqualTo(new Money(39.00));
-        assertThat(paneFund.income()).isEqualTo(Money.ZERO);
+        assertThat(paneFund.totalBalance()).isEqualTo(new Money(39.00));
+        assertThat(paneFund.balance()).isEqualTo(Money.ZERO);
     }
 
     @Test
     public void resultsForAAMISSFundShouldBeCorrect() {
         Fund aamissFund = funds.findFundByName("AAMISS");
         assertThat(aamissFund.operationSeriesCount()).isEqualTo(2);
-        assertThat(aamissFund.totalIncome()).isEqualTo(new Money(2.75).add(new Money(7.56)));
+        assertThat(aamissFund.totalBalance()).isEqualTo(new Money(2.75).add(new Money(7.56)));
         assertThat(aamissFund.totalDeposit()).isEqualTo(new Money(250).add(new Money(300)));
     }
 
@@ -59,6 +59,6 @@ public class OperationsTest {
     public void resultsForSwitchedFundShouldBeCorrect() {
         Fund aosFund = funds.findFundByName("AOS");
         assertThat(aosFund.totalDeposit()).isEqualTo(new Money(5400));
-        assertThat(aosFund.totalIncome()).isEqualTo(new Money(-110.32));
+        assertThat(aosFund.totalBalance()).isEqualTo(new Money(-110.32));
     }
 }

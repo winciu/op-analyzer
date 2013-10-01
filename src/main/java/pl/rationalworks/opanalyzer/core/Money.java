@@ -1,8 +1,8 @@
 package pl.rationalworks.opanalyzer.core;
 
-import com.google.common.base.Objects;
-
 import java.math.BigDecimal;
+
+import com.google.common.base.Objects;
 
 /**
  * @author Adam Winciorek
@@ -66,5 +66,17 @@ public class Money {
 
     public Money minus(Money money) {
         return new Money(this.amount.subtract(money.amount));
+    }
+
+    public boolean isPositive() {
+        return this.amount.signum() == 1;
+    }
+
+    public boolean isNegative() {
+        return this.amount.signum() == -1;
+    }
+
+    public String asText() {
+        return String.format("%.2f", value());
     }
 }
