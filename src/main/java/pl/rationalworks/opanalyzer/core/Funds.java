@@ -73,6 +73,7 @@ public class Funds {
 
     /**
      * Calculates balance. This is the balance from funds I currently have.
+     * More prcisely it is balance from funds from the current operations series.
      *
      * @return
      */
@@ -95,14 +96,6 @@ public class Funds {
             totalBalance = totalBalance.add(fund.totalBalance());
         }
         return totalBalance;
-    }
-
-    public Money totalDeposit() {
-        Money totalDeposit = Money.ZERO;
-        for (Fund fund : funds.values()) {
-            totalDeposit = totalDeposit.add(fund.totalDeposit());
-        }
-        return totalDeposit;
     }
 
     public Money totalIncome() {

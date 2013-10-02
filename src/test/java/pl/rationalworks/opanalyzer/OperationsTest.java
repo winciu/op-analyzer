@@ -29,11 +29,6 @@ public class OperationsTest {
     }
 
     @Test
-    public void totalDepositShouldBeCorrect() {
-        assertThat(funds.totalDeposit()).isEqualTo(new Money(39700.00));
-    }
-
-    @Test
     public void incomeShouldBeCorrect() {
         assertThat(funds.totalBalance()).isEqualTo(new Money(170.97));
         assertThat(funds.balance()).isEqualTo(Money.ZERO);

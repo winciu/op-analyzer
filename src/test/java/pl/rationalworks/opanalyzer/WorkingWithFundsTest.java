@@ -1,13 +1,13 @@
 package pl.rationalworks.opanalyzer;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Test;
 import pl.rationalworks.opanalyzer.core.Fund;
 import pl.rationalworks.opanalyzer.core.FundOperation;
 import pl.rationalworks.opanalyzer.core.Funds;
 import pl.rationalworks.opanalyzer.core.Money;
 import pl.rationalworks.opanalyzer.core.TransactionType;
 
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Adam Winciorek
@@ -238,8 +238,6 @@ public class WorkingWithFundsTest {
         funds.performOperations(operation, operation1, operation2, operation3);
         assertThat(funds.balance()).isEqualTo(new Money(6.18));
         assertThat(funds.totalBalance()).isEqualTo(new Money(-104.14));
-        //conversion/switch amount should not affect total deposit
-        assertThat(funds.totalDeposit()).isEqualTo(new Money(9400.00));
         Fund fund = funds.findFundByName("AS OS");
         assertThat(fund.totalDeposit()).isEqualTo(new Money(5400));
         assertThat(fund.balance()).isEqualTo(Money.ZERO);
@@ -260,8 +258,6 @@ public class WorkingWithFundsTest {
         funds.performOperations(operation, operation1, operation2, operation3, operation4);
         assertThat(funds.balance()).isEqualTo(new Money(10.78));
         assertThat(funds.totalBalance()).isEqualTo(new Money(-99.54));
-        //conversion/switch amount should not affect total deposit
-        assertThat(funds.totalDeposit()).isEqualTo(new Money(9700.00));
         Fund fund = funds.findFundByName("AS OS");
         assertThat(fund.balance()).isEqualTo(Money.ZERO);
         assertThat(fund.totalBalance()).isEqualTo(new Money(-110.32));

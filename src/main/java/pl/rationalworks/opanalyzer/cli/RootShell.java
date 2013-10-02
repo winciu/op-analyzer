@@ -2,6 +2,7 @@ package pl.rationalworks.opanalyzer.cli;
 
 import asg.cliche.Command;
 import asg.cliche.Param;
+import com.google.common.base.Strings;
 import jlibs.core.lang.Ansi;
 import pl.rationalworks.opanalyzer.InputFileParser;
 import pl.rationalworks.opanalyzer.core.Fund;
@@ -20,7 +21,7 @@ import java.util.List;
 public class RootShell {
 
     private final Funds funds;
-    private static final Ansi negativeFormatter = new Ansi(Ansi.Attribute.BRIGHT, Ansi.Color.RED, null);
+    private static final Ansi tableHeaderFormatter = new Ansi(Ansi.Attribute.UNDERLINE, Ansi.Color.YELLOW, null);
 
     public RootShell() {
         this.funds = new Funds();
@@ -47,25 +48,27 @@ public class RootShell {
     @Command(abbrev = "now", description = "Show funds currently in wallet")
     public void showFundsICurrentlyHave() {
         Collection<Fund> currentFunds = this.funds.currentFunds();
-        Logger.format("%-30s | %-8s | %-10s | %-10s\n", "Fund name", " Current value", "Deposit", "Income");
+        String headerFormat = "%-50s | %-14s | %-10s | %-10s\n";
+        String paddedName = Strings.padEnd(Strings.padStart("Fund name", 25, ' '), 40, ' ');
+        Logger.format(headerFormat, tableHeaderFormatter.colorize(paddedName), tableHeaderFormatter.colorize("Current value"),
+                tableHeaderFormatter.colorize("Deposit"), tableHeaderFormatter.colorize("Balance"));
+        String rowFormat = "%-40s | %-14s | %-10s | %-10s\n";
         for (Fund currentFund : currentFunds) {
-            currentFund.getName();
+            Logger.format(rowFormat, currentFund.getName(), MoneyFormatter.format(currentFund.getRegistryAmount()),
+                    MoneyFormatter.format(currentFund.getDeposit()), MoneyFormatter.format(currentFund.balance()));
         }
     }
 
     @Command(abbrev = "st", description = "Shows overall status (summary)")
     public void showOverallStatus() {
+        showMoneyFieldValue("Current balance", funds.balance());
         showMoneyFieldValue("Total balance", funds.totalBalance());
-        showMoneyFieldValue("Total deposit", funds.totalDeposit());
         showMoneyFieldValue("Total income", funds.totalIncome());
         showMoneyFieldValue("Total loss", funds.totalLoss());
     }
 
     private static void showMoneyFieldValue(String header, Money money) {
-        String formattedValue = money.asText();
-        if (money.isNegative()) {
-            formattedValue = negativeFormatter.colorize(formattedValue);
-        }
-        Logger.format("%-15s: %s\n", header, formattedValue);
+        Logger.format("%-15s: %s\n", header, MoneyFormatter.format(money));
     }
+
 }
