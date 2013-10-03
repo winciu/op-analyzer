@@ -8,4 +8,8 @@ public class Logger {
     public static void format(String format, Object... args) {
         System.out.format(format, args);
     }
+
+    public static void newLine() {
+        System.out.println();
+    }
 }

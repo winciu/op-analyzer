@@ -10,56 +10,58 @@ import java.util.List;
 public class OperationsOnFund implements Iterable<FundOperation> {
 
     private final List<FundOperation> operations;
-    private boolean closed;
     /**
      * Amount of money that was transfer to particular fund. Conversion/switch amount are included.
      */
     private Money deposit;
-    /**
-     * Amount of new money that was transfer to this fund. Conversion/switch amount are not included.
-     */
-    private Money totalDeposit;
-    private Money lastRegistryAmount;
+    private Money registryAmount;
     private Money balance;
+
 
     public OperationsOnFund() {
         this.operations = new ArrayList<FundOperation>();
-        this.closed = false;
-        this.balance = Money.ZERO;
-        this.lastRegistryAmount = Money.ZERO;
-        this.totalDeposit = Money.ZERO;
+        this.registryAmount = Money.ZERO;
         this.deposit = Money.ZERO;
+        this.balance = Money.ZERO;
     }
 
-    public FundOperationResult add(FundOperation operation) {
+    public void add(FundOperation operation) {
         this.operations.add(operation);
         switch (operation.getTransactionType()) {
             case PURCHASE:
             case OPENING_PURCHASE:
-                this.totalDeposit = this.totalDeposit.add(operation.getAmount());
                 this.deposit = this.deposit.add(operation.getAmount());
-                this.lastRegistryAmount = operation.getRegistryAmount();
-                this.balance = operation.getRegistryAmount().minus(this.deposit);
+                this.registryAmount = operation.getRegistryAmount();
+                this.balance = operation.getRegistryAmount().minus(this.registryAmount);
                 break;
             case SWITCH:
-                this.lastRegistryAmount = operation.getRegistryAmount();
                 if (operation.getRegistryAmount().isZero()) {
-                    this.balance = operation.getAmount().minus(this.deposit);
-                    close();
+                    this.balance = operation.getAmount().minus(this.registryAmount);
+                    this.registryAmount = operation.getRegistryAmount();
                     break;
                 }
-                this.deposit = this.deposit.add(operation.getAmount());
-                this.balance = operation.getRegistryAmount().minus(this.deposit);
+                this.balance = operation.getRegistryAmount().minus(this.registryAmount.add(operation.getAmount()));
+                this.registryAmount = operation.getRegistryAmount();
                 break;
             case REDEMPTION:
-                this.balance = operation.getAmount().minus(this.deposit);
-                this.lastRegistryAmount = operation.getRegistryAmount();
-                close();
+                this.balance = operation.getAmount().minus(this.registryAmount);
+                this.registryAmount = operation.getRegistryAmount();
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unknown transaction type '%s'", operation.getTransactionType().name()));
         }
-        return new FundOperationResult(this.deposit, this.lastRegistryAmount);
+    }
+
+    public Money getDeposit() {
+        return deposit;
+    }
+
+    public Money getRegistryAmount() {
+        return registryAmount;
+    }
+
+    public Money getBalance() {
+        return balance;
     }
 
     @Override
@@ -67,27 +69,22 @@ public class OperationsOnFund implements Iterable<FundOperation> {
         return this.operations.iterator();
     }
 
-    /**
-     * Closes current operations. Closing means that the recently added (current) operation is the last one, so we need
-     * to close this operation list. This is a result of conversion or sold of a given fund.
-     */
-    private void close() {
-        this.closed = true;
+    private boolean purchaseHasBeenDone() {
+        for (FundOperation operation : operations) {
+            if (TransactionType.PURCHASE.equals(operation.getTransactionType()) || TransactionType.OPENING_PURCHASE
+                    .equals(operation.getTransactionType())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean areClosed() {
-        return closed;
-    }
-
-    public Money getBalance() {
-        return balance;
+        return purchaseHasBeenDone() && this.registryAmount.isZero();
     }
 
     public int count() {
         return this.operations.size();
     }
 
-    public Money getTotalDeposit() {
-        return totalDeposit;
-    }
 }

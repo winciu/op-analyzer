@@ -1,13 +1,13 @@
 package pl.rationalworks.opanalyzer;
 
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 import pl.rationalworks.opanalyzer.core.Fund;
 import pl.rationalworks.opanalyzer.core.FundOperation;
 import pl.rationalworks.opanalyzer.core.Funds;
 import pl.rationalworks.opanalyzer.core.Money;
 import pl.rationalworks.opanalyzer.core.TransactionType;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Test;
 
 /**
  * @author Adam Winciorek
@@ -28,7 +28,7 @@ public class WorkingWithFundsTest {
         funds.performOperation(fundOperation);
         Fund fund = funds.findFundByName("PANEF");
         assertThat(fund).isNotNull();
-        assertThat(fund.getDeposit()).isEqualTo(new Money(100.00));
+        assertThat(fund.getIncomings()).isEqualTo(new Money(100.00));
         assertThat(fund.getRegistryAmount()).isEqualTo(new Money(99.97));
     }
 
@@ -41,7 +41,7 @@ public class WorkingWithFundsTest {
         funds.performOperation(fundOperation2);
         Fund fund = funds.findFundByName("PANEF");
         assertThat(fund).isNotNull();
-        assertThat(fund.getDeposit()).isEqualTo(new Money(200.00));
+        assertThat(fund.getIncomings()).isEqualTo(new Money(200.00));
         assertThat(fund.getRegistryAmount()).isEqualTo(new Money(214.28));
     }
 
@@ -53,7 +53,7 @@ public class WorkingWithFundsTest {
         funds.performOperation(fundOperation);
         funds.performOperation(fundOperation2);
         Fund fund = funds.findFundByName("AAS");
-        assertThat(fund.getDeposit()).isEqualTo(new Money(200.00));
+        assertThat(fund.getIncomings()).isEqualTo(new Money(200.00));
         assertThat(fund.getRegistryAmount()).isEqualTo(new Money(0.0));
     }
 
@@ -69,10 +69,10 @@ public class WorkingWithFundsTest {
         funds.performOperation(fundOperation3);
         funds.performOperation(fundOperationLast);
         Fund fund = funds.findFundByName("AAS");
-        assertThat(fund.getDeposit()).isEqualTo(new Money(250.00));
+        assertThat(fund.getIncomings()).isEqualTo(new Money(250.00));
         assertThat(fund.getRegistryAmount()).isEqualTo(new Money(0.0));
         fund = funds.findFundByName("AAMS");
-        assertThat(fund.getDeposit()).isEqualTo(new Money(200.00));
+        assertThat(fund.getIncomings()).isEqualTo(new Money(200.00));
         assertThat(fund.getRegistryAmount()).isEqualTo(new Money(200.0));
     }
 
@@ -236,8 +236,10 @@ public class WorkingWithFundsTest {
         FundOperation operation2 = new FundOperation("AS OS", TransactionType.SWITCH, new Money(5289.68), Money.ZERO);
         FundOperation operation3 = new FundOperation("AS P", TransactionType.SWITCH, new Money(5289.68), new Money(9295.86));
         funds.performOperations(operation, operation1, operation2, operation3);
-        assertThat(funds.balance()).isEqualTo(new Money(6.18));
-        assertThat(funds.totalBalance()).isEqualTo(new Money(-104.14));
+//        assertThat(funds.balance()).isEqualTo(new Money(6.18));
+//        assertThat(funds.totalBalance()).isEqualTo(new Money(-104.14));
+        //conversion/switch amount should not affect total deposit
+        assertThat(funds.deposit()).isEqualTo(new Money(9400.00));
         Fund fund = funds.findFundByName("AS OS");
         assertThat(fund.totalDeposit()).isEqualTo(new Money(5400));
         assertThat(fund.balance()).isEqualTo(Money.ZERO);
@@ -258,6 +260,8 @@ public class WorkingWithFundsTest {
         funds.performOperations(operation, operation1, operation2, operation3, operation4);
         assertThat(funds.balance()).isEqualTo(new Money(10.78));
         assertThat(funds.totalBalance()).isEqualTo(new Money(-99.54));
+        //conversion/switch amount should not affect total deposit
+        assertThat(funds.deposit()).isEqualTo(new Money(9700.00));
         Fund fund = funds.findFundByName("AS OS");
         assertThat(fund.balance()).isEqualTo(Money.ZERO);
         assertThat(fund.totalBalance()).isEqualTo(new Money(-110.32));

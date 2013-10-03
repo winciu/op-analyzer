@@ -5,6 +5,10 @@ package pl.rationalworks.opanalyzer.core;
  */
 public class Fund {
     private final String name;
+    /**
+     * Stores value of all deposits and money transfer after switches
+     */
+    private Money incomings;
     private Money deposit;
     private Money registryAmount;
     private final OperationsOnFundSeries operationSeries;
@@ -12,7 +16,7 @@ public class Fund {
     public Fund(String name) {
         this.name = name;
         this.operationSeries = new OperationsOnFundSeries();
-        deposit = Money.ZERO;
+        incomings = Money.ZERO;
         registryAmount = Money.ZERO;
     }
 
@@ -20,36 +24,27 @@ public class Fund {
         return name;
     }
 
-    public FundOperationResult performOperation(FundOperation operation) {
+    public void performOperation(FundOperation operation) {
         OperationsOnFund operationsOnFund = this.operationSeries.getCurrentOperationsOnFund();
         if (operationsOnFund.areClosed()) {
             operationsOnFund = this.operationSeries.addNewOperationsOnFund();
         }
-        FundOperationResult fundOperationResult = operationsOnFund.add(operation);
-        this.deposit = fundOperationResult.getDeposit();
-        this.registryAmount = fundOperationResult.getLastRegistryAmount();
-        return fundOperationResult;
+        operationsOnFund.add(operation);
+        this.deposit = operationsOnFund.getDeposit();
+        this.incomings = this.incomings.add(operation.getAmount());
+        this.registryAmount = operationsOnFund.getRegistryAmount();
     }
 
     public Money getDeposit() {
         return deposit;
     }
 
-    public Money getRegistryAmount() {
-        return registryAmount;
+    public Money getIncomings() {
+        return incomings;
     }
 
-    /**
-     * How much money we put in this fund form the beginning.
-     *
-     * @return
-     */
-    public Money totalDeposit() {
-        Money totalDeposit = Money.ZERO;
-        for (OperationsOnFund operationsOnFund : this.operationSeries) {
-            totalDeposit = totalDeposit.add(operationsOnFund.getTotalDeposit());
-        }
-        return totalDeposit;
+    public Money getRegistryAmount() {
+        return registryAmount;
     }
 
     /**
@@ -58,11 +53,32 @@ public class Fund {
      * @return
      */
     public Money balance() {
-        OperationsOnFund operationsOnFund = this.operationSeries.getCurrentOperationsOnFund();
-        if (operationsOnFund.areClosed()) {
+        if (!currentlyInWallet()) {
             return Money.ZERO;
         }
-        return operationsOnFund.getBalance();
+        return registryAmount.minus(incomings);
+    }
+
+    public Money income() {
+        if(!currentlyInWallet()) {
+            return Money.ZERO;
+        }
+        Money value = balance();
+        if (value.isNegative()) {
+            return Money.ZERO;
+        }
+        return value;
+    }
+
+    public Money loss() {
+        if(!currentlyInWallet()) {
+            return Money.ZERO;
+        }
+        Money value = balance();
+        if (value.isPositive()) {
+            return Money.ZERO;
+        }
+        return value;
     }
 
     /**
@@ -88,6 +104,19 @@ public class Fund {
 
     public int operationSeriesCount() {
         return this.operationSeries.count();
+    }
+
+    /**
+     * How much money we put in this fund form the beginning.
+     *
+     * @return
+     */
+    public Money totalDeposit() {
+        Money totalDeposit = Money.ZERO;
+        for (OperationsOnFund operationsOnFund : this.operationSeries) {
+            totalDeposit = totalDeposit.add(operationsOnFund.getDeposit());
+        }
+        return totalDeposit;
     }
 
     public Money totalIncome() {

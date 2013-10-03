@@ -2,7 +2,6 @@ package pl.rationalworks.opanalyzer.cli;
 
 import asg.cliche.Command;
 import asg.cliche.Param;
-import com.google.common.base.Strings;
 import jlibs.core.lang.Ansi;
 import pl.rationalworks.opanalyzer.InputFileParser;
 import pl.rationalworks.opanalyzer.core.Fund;
@@ -14,6 +13,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.List;
+
+import com.google.common.base.Strings;
 
 /**
  * @author Adam Winciorek
@@ -48,27 +49,37 @@ public class RootShell {
     @Command(abbrev = "now", description = "Show funds currently in wallet")
     public void showFundsICurrentlyHave() {
         Collection<Fund> currentFunds = this.funds.currentFunds();
-        String headerFormat = "%-50s | %-14s | %-10s | %-10s\n";
+        String headerFormat = "%-50s | %-20s | %-20s | %-10s\n";
         String paddedName = Strings.padEnd(Strings.padStart("Fund name", 25, ' '), 40, ' ');
-        Logger.format(headerFormat, tableHeaderFormatter.colorize(paddedName), tableHeaderFormatter.colorize("Current value"),
+        Logger.format(headerFormat, tableHeaderFormatter.colorize(paddedName), tableHeaderFormatter.colorize("Current"),
                 tableHeaderFormatter.colorize("Deposit"), tableHeaderFormatter.colorize("Balance"));
-        String rowFormat = "%-40s | %-14s | %-10s | %-10s\n";
+        String rowFormat = "%-40s | %-10s | %-10s | %-10s\n";
         for (Fund currentFund : currentFunds) {
             Logger.format(rowFormat, currentFund.getName(), MoneyFormatter.format(currentFund.getRegistryAmount()),
-                    MoneyFormatter.format(currentFund.getDeposit()), MoneyFormatter.format(currentFund.balance()));
+                    MoneyFormatter.format(currentFund.getIncomings()), MoneyFormatter.format(currentFund.balance()));
         }
+        Logger.newLine();
     }
 
     @Command(abbrev = "st", description = "Shows overall status (summary)")
     public void showOverallStatus() {
         showMoneyFieldValue("Current balance", funds.balance());
+        showMoneyFieldValue("Current amount", funds.amount());
+        showMoneyFieldValue("Current deposit", funds.deposit());
+        Logger.newLine();
         showMoneyFieldValue("Total balance", funds.totalBalance());
         showMoneyFieldValue("Total income", funds.totalIncome());
-        showMoneyFieldValue("Total loss", funds.totalLoss());
+        showMoneyFieldValue("Total loss (incl. tax)", funds.totalLoss());
+        Logger.newLine();
     }
 
     private static void showMoneyFieldValue(String header, Money money) {
-        Logger.format("%-15s: %s\n", header, MoneyFormatter.format(money));
+        Logger.format("%-20s: %s\n", header, MoneyFormatter.format(money));
+    }
+
+    @Command(abbrev = "h", description = "Shows operations history in merged form")
+    public void showHistory() {
+
     }
 
 }

@@ -15,7 +15,7 @@ public class Money {
     public static final Money ZERO = new Money();
 
     private Money(BigDecimal value) {
-        this.amount = value;//.multiply(BigDecimal.valueOf(100));
+        this.amount = value;
     }
 
     public Money() {
@@ -38,8 +38,8 @@ public class Money {
         return ZERO_AMOUNT.equals(this.amount);
     }
 
-    public double value() {
-        return this.amount/*.divide(BigDecimal.valueOf(100))*/.doubleValue();
+    public BigDecimal value() {
+        return this.amount;
     }
 
     @Override
@@ -77,6 +77,6 @@ public class Money {
     }
 
     public String asText() {
-        return String.format("%.2f", value());
+        return String.format("%,.2f", value());
     }
 }

@@ -1,9 +1,11 @@
 package pl.rationalworks.opanalyzer;
 
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 import pl.rationalworks.opanalyzer.core.Money;
 
-import static org.fest.assertions.Assertions.assertThat;
+import java.math.BigDecimal;
+
+import org.junit.Test;
 
 /**
  * @author Adam Winciorek
@@ -13,19 +15,19 @@ public class MoneyTest {
     @Test
     public void moneyCreatedFromStringShouldBeCorrect() {
         Money money = new Money("123.54");
-        assertThat(money.value()).isEqualTo(123.54);
+        assertThat(money.value()).isEqualTo(new BigDecimal("123.54"));
     }
     
     @Test
     public void moneyCreatedFromDoubleShouldBeCorrect() {
         Money money = new Money(123.54);
-        assertThat(money.value()).isEqualTo(123.54);
+        assertThat(money.value()).isEqualTo(BigDecimal.valueOf(123.54));
     }
 
     @Test
     public void moneyCreatedFromDefaultShouldBeZeroValue() {
         Money money = new Money();
-        assertThat(money.value()).isEqualTo(0.00);
+        assertThat(money.value()).isEqualTo(BigDecimal.valueOf(0.00));
     }
 
     @Test

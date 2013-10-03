@@ -73,7 +73,7 @@ public class Funds {
 
     /**
      * Calculates balance. This is the balance from funds I currently have.
-     * More prcisely it is balance from funds from the current operations series.
+     * More precisely it is balance from funds from the current operations series.
      *
      * @return
      */
@@ -83,6 +83,38 @@ public class Funds {
             balance = balance.add(fund.balance());
         }
         return balance;
+    }
+
+    public Money deposit() {
+        Money deposit = Money.ZERO;
+        for (Fund fund : funds.values()) {
+            deposit = deposit.add(fund.getDeposit());
+        }
+        return deposit;
+    }
+
+    public Money amount() {
+        Money amount = Money.ZERO;
+        for (Fund fund : currentFunds()) {
+            amount = amount.add(fund.getRegistryAmount());
+        }
+        return amount;
+    }
+
+    public Money income() {
+        Money income = Money.ZERO;
+        for (Fund fund : currentFunds()) {
+            income = income.add(fund.income());
+        }
+        return income;
+    }
+
+    public Money loss() {
+        Money loss = Money.ZERO;
+        for (Fund fund : currentFunds()) {
+            loss = loss.add(fund.loss());
+        }
+        return loss;
     }
 
     /**
@@ -106,6 +138,10 @@ public class Funds {
         return totalIncome;
     }
 
+    /**
+     * Returns total loss including taxes.
+     * @return
+     */
     public Money totalLoss() {
         Money totalLoss = Money.ZERO;
         for (Fund fund : funds.values()) {
@@ -113,4 +149,5 @@ public class Funds {
         }
         return totalLoss;
     }
+
 }
