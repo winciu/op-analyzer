@@ -2,10 +2,12 @@ package pl.rationalworks.opanalyzer.cli;
 
 import asg.cliche.Command;
 import asg.cliche.Param;
+import com.google.common.base.Strings;
 import jlibs.core.lang.Ansi;
 import pl.rationalworks.opanalyzer.InputFileParser;
 import pl.rationalworks.opanalyzer.core.Fund;
 import pl.rationalworks.opanalyzer.core.FundOperation;
+import pl.rationalworks.opanalyzer.core.FundOperationsDigester;
 import pl.rationalworks.opanalyzer.core.Funds;
 import pl.rationalworks.opanalyzer.core.Money;
 
@@ -14,14 +16,12 @@ import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.common.base.Strings;
-
 /**
  * @author Adam Winciorek
  */
 public class RootShell {
 
-    private final Funds funds;
+    private Funds funds;
     private static final Ansi tableHeaderFormatter = new Ansi(Ansi.Attribute.UNDERLINE, Ansi.Color.YELLOW, null);
 
     public RootShell() {
@@ -32,13 +32,8 @@ public class RootShell {
     public void readDataFrom(@Param(name = "filePath", description = "Path to operations data file") String aFilePath) throws FileNotFoundException {
         InputFileParser fileParser = new InputFileParser();
         List<FundOperation> fundOperations = fileParser.parseDataFile(new File(aFilePath));
-        processOperations(fundOperations);
-    }
-
-    private void processOperations(List<FundOperation> fundOperations) {
-        for (FundOperation fundOperation : fundOperations) {
-            this.funds.performOperation(fundOperation);
-        }
+        FundOperationsDigester operationsDigester = new FundOperationsDigester();
+        this.funds = operationsDigester.digestOperations(fundOperations);
     }
 
     @Command(abbrev = "pwd", description = "Prints current working directory")

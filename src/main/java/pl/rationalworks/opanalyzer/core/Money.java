@@ -1,8 +1,8 @@
 package pl.rationalworks.opanalyzer.core;
 
-import java.math.BigDecimal;
-
 import com.google.common.base.Objects;
+
+import java.math.BigDecimal;
 
 /**
  * @author Adam Winciorek
@@ -35,7 +35,7 @@ public class Money {
     }
 
     public boolean isZero() {
-        return ZERO_AMOUNT.equals(this.amount);
+        return ZERO_AMOUNT.compareTo(this.amount) == 0;
     }
 
     public BigDecimal value() {

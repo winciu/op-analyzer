@@ -16,6 +16,7 @@ public class FundOperation {
     private final TransactionType transactionType;
     private final Money amount;
     private final Money registryAmount;
+    private Fund switchedFromFund;
 
     public FundOperation(DateTime orderDate, DateTime txRatingDate, String foundName, TransactionType transactionType, Money amount, Money registryAmount) {
         this.orderDate = orderDate;
@@ -61,6 +62,22 @@ public class FundOperation {
     @Override
     public int hashCode() {
         return Objects.hashCode(orderDate, txRatingDate, foundName, transactionType, amount, registryAmount);
+    }
+
+    public boolean isSwitchInitial() {
+        return TransactionType.SWITCH.equals(transactionType) && getRegistryAmount().isZero();
+    }
+
+    public boolean isSwitchFinal() {
+        return TransactionType.SWITCH.equals(transactionType) && !getRegistryAmount().isZero();
+    }
+
+    public Fund getSwitchedFromFund() {
+        return switchedFromFund;
+    }
+
+    void setSwitchedFromFund(Fund switchedFromFund) {
+        this.switchedFromFund = switchedFromFund;
     }
 
     @Override

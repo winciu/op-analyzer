@@ -8,16 +8,12 @@ public class Fund {
     /**
      * Stores value of all deposits and money transfer after switches
      */
-    private Money incomings;
-    private Money deposit;
     private Money registryAmount;
     private final OperationsOnFundSeries operationSeries;
 
     public Fund(String name) {
         this.name = name;
         this.operationSeries = new OperationsOnFundSeries();
-        incomings = Money.ZERO;
-        registryAmount = Money.ZERO;
     }
 
     public String getName() {
@@ -29,22 +25,52 @@ public class Fund {
         if (operationsOnFund.areClosed()) {
             operationsOnFund = this.operationSeries.addNewOperationsOnFund();
         }
-        operationsOnFund.add(operation);
-        this.deposit = operationsOnFund.getDeposit();
-        this.incomings = this.incomings.add(operation.getAmount());
+        operationsOnFund.digest(operation);
         this.registryAmount = operationsOnFund.getRegistryAmount();
     }
 
-    public Money getDeposit() {
+    /**
+     * Checks whether the first operation on this fund was purchase.
+     * @return
+     */
+    public boolean wasPurchasedDirectly() {
+        return currentOperations().purchaseIsTheFirstOne();
+    }
+
+    /**
+     * This method returns the initial fund deposit. If purchase was the first operation on this fund, then this fund is an
+     * initial fund. If conversion is the first operation on this fund it means that the initial fund is the fund this one
+     * was converted from. This is the recursive check.
+     * @return this fund if its first operation was purchase, or the fund this fund was converted from in case the first
+     * operation on this fund is a switch operation.
+     */
+    public Money getInitialFundDeposit() {
+        return findInitialFundDeposit(this);
+    }
+
+    private Money findInitialFundDeposit(Fund foundToCheck) {
+        if (foundToCheck.wasPurchasedDirectly()) {
+            return foundToCheck.getDeposit();
+        }
+        Money deposit = Money.ZERO;
+        for (FundOperation currentOperation : currentOperations()) {
+            if (currentOperation.isSwitchFinal()) {
+                deposit = deposit.add(findInitialFundDeposit(currentOperation.getSwitchedFromFund()));
+            }
+        }
         return deposit;
     }
 
+    public Money getDeposit() {
+        return currentOperations().getDeposit();
+    }
+
     public Money getIncomings() {
-        return incomings;
+        return currentOperations().getIncomings();
     }
 
     public Money getRegistryAmount() {
-        return registryAmount;
+        return this.registryAmount;
     }
 
     /**
@@ -56,7 +82,7 @@ public class Fund {
         if (!currentlyInWallet()) {
             return Money.ZERO;
         }
-        return registryAmount.minus(incomings);
+        return registryAmount.minus(currentOperations().getIncomings());
     }
 
     public Money income() {
@@ -140,4 +166,5 @@ public class Fund {
         }
         return loss;
     }
+
 }

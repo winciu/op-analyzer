@@ -4,6 +4,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import pl.rationalworks.opanalyzer.core.Fund;
 import pl.rationalworks.opanalyzer.core.FundOperation;
+import pl.rationalworks.opanalyzer.core.FundOperationsDigester;
 import pl.rationalworks.opanalyzer.core.Funds;
 import pl.rationalworks.opanalyzer.core.Money;
 
@@ -18,14 +19,15 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 public class OperationsTest {
     private static final File INPUT_FILE = new File("src/test/resources", "operationsTest.in");
-    private static final Funds funds = new Funds();
+    private static Funds funds;
 
 
     @BeforeClass
     public static void onlyOnce() throws FileNotFoundException {
         InputFileParser parser = new InputFileParser();
         List<FundOperation> fundsOperations = parser.parseDataFile(INPUT_FILE);
-        funds.performOperations(fundsOperations);
+        FundOperationsDigester digester = new FundOperationsDigester();
+        funds = digester.digestOperations(fundsOperations);
     }
 
     @Test

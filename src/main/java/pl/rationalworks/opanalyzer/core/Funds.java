@@ -21,26 +21,8 @@ public class Funds {
         return this.funds.get(fundName);
     }
 
-    public void performOperation(FundOperation operation) {
-        String fundName = operation.getFoundName();
-        Fund fund = findFundByName(fundName);
-        if (fund == null) {
-            fund = new Fund(fundName);
-            this.funds.put(fundName, fund);
-        }
-        fund.performOperation(operation);
-    }
-
-    public void performOperations(FundOperation... operations) {
-        for (FundOperation operation : operations) {
-            performOperation(operation);
-        }
-    }
-
-    public void performOperations(Iterable<FundOperation> operations) {
-        for (FundOperation operation : operations) {
-            performOperation(operation);
-        }
+    public void addFund(Fund fundToAdd) {
+        this.funds.put(fundToAdd.getName(), fundToAdd);
     }
 
     /**
@@ -87,8 +69,8 @@ public class Funds {
 
     public Money deposit() {
         Money deposit = Money.ZERO;
-        for (Fund fund : funds.values()) {
-            deposit = deposit.add(fund.getDeposit());
+        for (Fund fund : currentFunds()) {
+            deposit = deposit.add(fund.getInitialFundDeposit());
         }
         return deposit;
     }
@@ -140,6 +122,7 @@ public class Funds {
 
     /**
      * Returns total loss including taxes.
+     *
      * @return
      */
     public Money totalLoss() {
