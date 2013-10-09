@@ -30,14 +30,6 @@ public class Fund {
     }
 
     /**
-     * Checks whether the first operation on this fund was purchase.
-     * @return
-     */
-    public boolean wasPurchasedDirectly() {
-        return currentOperations().purchaseIsTheFirstOne();
-    }
-
-    /**
      * This method returns the initial fund deposit. If purchase was the first operation on this fund, then this fund is an
      * initial fund. If conversion is the first operation on this fund it means that the initial fund is the fund this one
      * was converted from. This is the recursive check.
@@ -48,12 +40,12 @@ public class Fund {
         return findInitialFundDeposit(this);
     }
 
-    private Money findInitialFundDeposit(Fund foundToCheck) {
-        if (foundToCheck.wasPurchasedDirectly()) {
-            return foundToCheck.getDeposit();
-        }
+    private Money findInitialFundDeposit(Fund fundToCheck) {
         Money deposit = Money.ZERO;
-        for (FundOperation currentOperation : currentOperations()) {
+        for (FundOperation currentOperation : fundToCheck.currentOperations()) {
+            if (currentOperation.isPurchase()) {
+                deposit = deposit.add(currentOperation.getAmount());
+            }
             if (currentOperation.isSwitchFinal()) {
                 deposit = deposit.add(findInitialFundDeposit(currentOperation.getSwitchedFromFund()));
             }

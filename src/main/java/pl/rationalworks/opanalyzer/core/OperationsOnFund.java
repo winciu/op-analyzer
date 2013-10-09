@@ -94,13 +94,4 @@ public class OperationsOnFund implements Iterable<FundOperation> {
         return this.operations.size();
     }
 
-    public boolean purchaseIsTheFirstOne() {
-        if (this.operations.isEmpty()) {
-            return false;
-        }
-        FundOperation firstOperation = this.operations.get(0);
-        return TransactionType.PURCHASE.equals(firstOperation.getTransactionType()) ||
-                TransactionType.OPENING_PURCHASE.equals(firstOperation.getTransactionType());
-    }
-
 }

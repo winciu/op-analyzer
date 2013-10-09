@@ -47,7 +47,7 @@ public class RootShell {
         String headerFormat = "%-50s | %-20s | %-20s | %-10s\n";
         String paddedName = Strings.padEnd(Strings.padStart("Fund name", 25, ' '), 40, ' ');
         Logger.format(headerFormat, tableHeaderFormatter.colorize(paddedName), tableHeaderFormatter.colorize("Current"),
-                tableHeaderFormatter.colorize("Deposit"), tableHeaderFormatter.colorize("Balance"));
+                tableHeaderFormatter.colorize("Incomings"), tableHeaderFormatter.colorize("Balance"));
         String rowFormat = "%-40s | %-10s | %-10s | %-10s\n";
         for (Fund currentFund : currentFunds) {
             Logger.format(rowFormat, currentFund.getName(), MoneyFormatter.format(currentFund.getRegistryAmount()),
@@ -59,6 +59,9 @@ public class RootShell {
     @Command(abbrev = "st", description = "Shows overall status (summary)")
     public void showOverallStatus() {
         showMoneyFieldValue("Current balance", funds.balance());
+        showMoneyFieldValue("Current income", funds.income());
+        showMoneyFieldValue("Current loss", funds.loss());
+        Logger.newLine();
         showMoneyFieldValue("Current amount", funds.amount());
         showMoneyFieldValue("Current deposit", funds.deposit());
         Logger.newLine();

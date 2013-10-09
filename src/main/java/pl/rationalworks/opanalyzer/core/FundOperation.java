@@ -80,6 +80,10 @@ public class FundOperation {
         this.switchedFromFund = switchedFromFund;
     }
 
+    public boolean isPurchase() {
+        return TransactionType.PURCHASE.equals(transactionType) || TransactionType.OPENING_PURCHASE.equals(transactionType);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
