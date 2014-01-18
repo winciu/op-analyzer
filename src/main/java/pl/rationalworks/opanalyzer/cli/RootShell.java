@@ -13,7 +13,6 @@ import pl.rationalworks.opanalyzer.core.Money;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,14 +42,14 @@ public class RootShell {
 
     @Command(abbrev = "now", description = "Show funds currently in wallet")
     public void showFundsICurrentlyHave() {
-        Collection<Fund> currentFunds = this.funds.currentFunds();
-        String headerFormat = "%-50s | %-20s | %-20s | %-10s\n";
+        String headerFormat = "%-5s | %-50s | %-20s | %-20s | %-10s\n";
         String paddedName = Strings.padEnd(Strings.padStart("Fund name", 25, ' '), 40, ' ');
-        Logger.format(headerFormat, tableHeaderFormatter.colorize(paddedName), tableHeaderFormatter.colorize("Current"),
-                tableHeaderFormatter.colorize("Incomings"), tableHeaderFormatter.colorize("Balance"));
-        String rowFormat = "%-40s | %-10s | %-10s | %-10s\n";
-        for (Fund currentFund : currentFunds) {
-            Logger.format(rowFormat, currentFund.getName(), MoneyFormatter.format(currentFund.getRegistryAmount()),
+        Logger.format(headerFormat, tableHeaderFormatter.colorize("Id"), tableHeaderFormatter.colorize(paddedName),
+                tableHeaderFormatter.colorize("Current"), tableHeaderFormatter.colorize("Incomings"),
+                tableHeaderFormatter.colorize("Balance"));
+        String rowFormat = "%-2s | %-40s | %-10s | %-10s | %-10s\n";
+        for (Fund currentFund : funds.currentFunds()) {
+            Logger.format(rowFormat, currentFund.getId(), currentFund.getName(), MoneyFormatter.format(currentFund.getRegistryAmount()),
                     MoneyFormatter.format(currentFund.getIncomings()), MoneyFormatter.format(currentFund.balance()));
         }
         Logger.newLine();
@@ -64,6 +63,7 @@ public class RootShell {
         Logger.newLine();
         showMoneyFieldValue("Current amount", funds.amount());
         showMoneyFieldValue("Current deposit", funds.deposit());
+        showMoneyFieldValue("Session balance", funds.amount().minus(funds.deposit()));
         Logger.newLine();
         showMoneyFieldValue("Total balance", funds.totalBalance());
         showMoneyFieldValue("Total income", funds.totalIncome());
@@ -78,6 +78,11 @@ public class RootShell {
     @Command(abbrev = "h", description = "Shows operations history in merged form")
     public void showHistory() {
 
+    }
+
+    @Command(abbrev = "set", description = "Sets current registry amount for a given fund")
+    public void setRegistryAmountForFund(int fundId, double amount)  {
+        this.funds.setRegistryAmountForFund(fundId, new Money(amount));
     }
 
 }

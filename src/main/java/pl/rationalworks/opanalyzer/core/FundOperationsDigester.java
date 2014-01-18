@@ -31,7 +31,7 @@ public class FundOperationsDigester {
     private void performOperation(Funds funds, FundOperation operation) {
         Fund fund = funds.findFundByName(operation.getFoundName());
         if (fund == null) {
-            fund = new Fund(operation.getFoundName());
+            fund = new Fund(operation.getFoundName(), funds.createNewFundId());
             funds.addFund(fund);
         }
         fund.performOperation(operation);

@@ -133,4 +133,15 @@ public class Funds {
         return totalLoss;
     }
 
+    public int createNewFundId() {
+        return this.funds.size() + 1;
+    }
+
+    public void setRegistryAmountForFund(int fundId, Money amount) {
+        for (Fund fund : currentFunds()) {
+            if (fund.hasId(fundId)) {
+                fund.setRegistryAmount(amount);
+            }
+        }
+    }
 }

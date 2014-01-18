@@ -10,14 +10,20 @@ public class Fund {
      */
     private Money registryAmount;
     private final OperationsOnFundSeries operationSeries;
+    private final int id;
 
-    public Fund(String name) {
+    public Fund(String name, int id) {
         this.name = name;
+        this.id = id;
         this.operationSeries = new OperationsOnFundSeries();
     }
 
     public String getName() {
         return name;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void performOperation(FundOperation operation) {
@@ -63,6 +69,10 @@ public class Fund {
 
     public Money getRegistryAmount() {
         return this.registryAmount;
+    }
+
+    public void setRegistryAmount(Money registryAmount) {
+        this.registryAmount = registryAmount;
     }
 
     /**
@@ -159,4 +169,7 @@ public class Fund {
         return loss;
     }
 
+    public boolean hasId(int fundId) {
+        return this.id == fundId;
+    }
 }
